@@ -97,6 +97,12 @@ To run compilation on the compute node, you have to set the attribute [`build_lo
 reframe -c examples/sombrero -r --performance-report --system isambard-cascadelake:compute-node -S build_locally=false
 ```
 
+### Phase3 partition
+
+On the nodes with Nvidia Ampere GPUs, memory usage is restricted to 4 GiB by default.
+To request more memory you [have to specify the resource](https://gw4-isambard.github.io/docs/user-guide/PHASE3.html#nvidia-gpu) `mem=...G`, for example by setting the `memory` key of `extra_resources` to the amount of memory you require.
+This can be done on the command line of ReFrame [...]
+
 ## Myriad
 
 ### Python3 module
