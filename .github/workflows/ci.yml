@@ -33,15 +33,6 @@ jobs:
         with:
           python-version: '3.10.6'
           cache: 'pip'
-
-      # - uses: mxschmitt/action-tmate@v3
-      # - name: Setup virtual environment
-      #   working-directory: ${{runner.workspace}}
-      #   shell: bash
-      #   run: |
-      #     python -m venv ci
-      #     source ci/bin/activate
-      #     echo "BENCHMARKS_ROOT=$(pwd)/ci/lib/python3.10/site-packages/benchmarks" >> $GITHUB_ENV
           
       - name: Install Excalibur-tests
         shell: bash
