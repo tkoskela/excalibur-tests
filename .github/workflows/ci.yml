@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: |
           python -m pip install --upgrade pip
-          pip install . --target ${{runner.workspace}}/pip
+          pip install .[test] --target ${{runner.workspace}}/pip
           echo "PATH=${{runner.workspace}}/pip/bin:${PATH}" >> "${GITHUB_ENV}"
       - name: Install Spack
         shell: bash
@@ -55,11 +55,6 @@ jobs:
       - name: ReFrame version number
         shell: bash
         run: reframe -V
-      - name: Install Pytest + Pandas
-        shell: bash
-        run: |
-          pip install pytest
-          pip install pandas
       - name: Install OpenMPI, CMake and extra Python packages
         shell: bash
         run: sudo apt-get install openmpi-bin libopenmpi-dev cmake
