@@ -1,6 +1,8 @@
+# Tutorial
+
 In this tutorial you will set up the benchmarking framework on the [ARCHER2](https://www.archer2.ac.uk) supercomputer, build and run example benchmarks, create a new benchmark and explore benchmark data.
 
-# Getting Started
+## Getting Started
 
 To complete this tutorial, you need to [connect to ARCHER2 via ssh](https://docs.archer2.ac.uk/user-guide/connecting/). You will need
 
@@ -13,9 +15,9 @@ Once you have the above prerequisites, you have to [generate an ssh key pair](ht
 ssh username@login.archer2.ac.uk
 ```
 
-# Installing the Framework
+## Installing the Framework
 
-## Set up python
+### Set up python
 
 We are going to use `python` and the `pip` package installer to install and run the framework. Load the `cray-python` module to get a python version that fills the requirements.
 ```bash
@@ -23,7 +25,7 @@ $ module load cray-python
 ```
 You can check with `python3 --version` that your python version is `3.8` or greater (at the time of writing, the default version was `3.9.13`).
 
-## Change to work directory
+### Change to work directory
 
 On ARCHER2, the compute nodes do not have access to your home directory, therefore it is import to install everything in a [work file system](https://docs.archer2.ac.uk/user-guide/data/#work-file-systems). Change to the work directory with
 
@@ -34,12 +36,12 @@ $ cd /work/<project code>/<project code>/${username}
 TODO: Fill in project code
 where ``${username}`` is the username you used to log in. In the work directory, clone the [excalibur-tests](https://github.com/ukri-excalibur/excalibur-tests) repository with
 
-## Clone the repository
+### Clone the repository
 
 ```bash
 $ git clone https://github.com/ukri-excalibur/excalibur-tests.git
 ```
-## Create a virtual environment
+### Create a virtual environment
 Before proceeding to install the software, we recommend creating a python virtual environment to avoid clashes with other installed python packages. You can do this with
 ```bash
 $ python3 -m venv excalibur-env
@@ -49,14 +51,14 @@ You should now see the name of the environment in parenthesis your terminal prom
 ```bash
 (excalibur-env) tk-d193@ln03:/work/d193/d193/tk-d193>
 ```
-## Install the excalibur-tests package
+### Install the excalibur-tests package
 Now we can use `pip` to install the package in the virtual environment
 ```bash
 $ pip install -e ./excalibur-tests
 ```
 We used the `editable` flag `-e` because later in the tutorial you will edit the repository to develop a new benchmark. If pip returns an error *TODO: Check the error message*, update it to the latest version with `python3 -m pip install --upgrade pip`. 
 
-## Set configuration variables
+### Set configuration variables
 
 Configure the framework by setting these environment variables
 
@@ -65,7 +67,7 @@ export RFM_CONFIG_FILES="$(pwd)/excalibur-tests/benchmarks/reframe_config.py"
 export RFM_USE_LOGIN_SHELL="true"
 ```
 
-## Install and configure spack
+### Install and configure spack
 
 Finally, we need to install the `spack` package manager. The framework will use it to build the benchmarks. Clone spack with
 
@@ -81,7 +83,7 @@ $ source ./spack/share/spack/setup-env.sh
 
 Spack should now be in the default search path.
 
-## Check installation was successful
+### Check installation was successful
 
 You can check everything has been installed successfully by checking that `spack` and `reframe` are in path and the path to the ReFrame config file is set correctly
 
@@ -94,7 +96,7 @@ $ ls $RFM_CONFIG_FILES
 /work/d193/d193/tk-d193/excalibur-tests/benchmarks/reframe_config.py
 ```
 
-# Run Sombrero Example
+## Run Sombrero Example
 
 You can now use ReFrame to run benchmarks from the `benchmarks/examples` and `benchmarks/apps` directories. The basic syntax is `reframe -c <path/to/benchmark> -r`. In addition, on ARCHER2, you have to provide the quality of service (QoS) type and your account on the command line. For example you can run the sombrero example with *TODO: Check if we need to pass account to reframe*
 ```bash
@@ -146,13 +148,13 @@ Things to note in output
 - Figures of merit
 You can find the log files from this benchmark in `perflogs/`
 
-# Postprocess Benchmark Results
+## Postprocess Benchmark Results
 
-# Create a Benchmark
+## Create a Benchmark
 
 In this section you will create a ReFrame benchmark by writing a python class that tells ReFrame how to build and run an application and collect data from its output. For simplicity, we use the [`STREAM`](https://www.cs.virginia.edu/stream/ref.html) benchmark. It is a simple memory bandwidth benchmark with minimal build dependencies.
 
-## Include ReFrame modules
+### Include ReFrame modules
 
 :::spoiler Code
 ```python
@@ -161,7 +163,7 @@ import reframe.utility.sanity as sn
 ```
 :::
 
-## Create a Test Class
+### Create a Test Class
 
 `SpackTest` is a class for benchmarks which will use Spack as build system. 
 
@@ -174,7 +176,7 @@ class StreamBenchmark(SpackTest):
 ```
 :::
 
-## Add Build Recipe
+### Add Build Recipe
 
 We prefer installing packages via spack whenever possible. In this exercise, the spack package for `stream` already exists in the global spack repository.
 
@@ -186,7 +188,7 @@ spack_spec = 'stream@5.10 +openmp'
 ```
 :::
 
-## Add Run Configuration
+### Add Run Configuration
 
 :::spoiler Code
 ```python
@@ -199,7 +201,7 @@ time_limit = '5m'
 ```
 :::
 
-## Add Sanity Check
+### Add Sanity Check
 
 The rest of the benchmark follows the [Writing a Performance Test ReFrame Tutorial](https://reframe-hpc.readthedocs.io/en/latest/tutorial_basics.html#writing-a-performance-test). First we need a sanity check that ensures the benchmark ran successfully. A function decorated with the `@sanity_function` decorator is used by ReFrame to check that the test ran successfully. The sanity function can perform a number of checks, in this case we want to match a line of the expected output.
 
@@ -211,7 +213,7 @@ def validate_solution(self):
 ```
 :::
 
-## Add Performance Pattern Check
+### Add Performance Pattern Check
 
 To record the performance of the benchmark, ReFrame should extract a figure of merit from the output of the test. A function decorated with the `@performance_function` decorator extracts or computes a performance metric from the test’s output.
 
@@ -237,7 +239,7 @@ def extract_triad_perf(self):
 ```
 :::
 
-## Run Stream
+### Run Stream
 
 ```bash
 reframe -c apps/stream/ -r --system archer2 -J'--qos=short'
@@ -276,7 +278,7 @@ Log file(s) saved in '/tmp/rfm-70arere5.log'
 ```
 :::
 
-# Portability Demo
+## Portability Demo
 
 Having gone through the process of setting up the framework on multiple systems enables you to run benchmarks configured in the repository on those systems. As a proof of this concept, this demo shows how to run a benchmark (e.g. `hpgmg`) on a list of systems (ARCHER2, csd3, cosma8, isambard-macs). Note that to run this demo, you will need an account and a CPU time allocation on each of these systems.
 
