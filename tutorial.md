@@ -43,7 +43,7 @@ We are going to use `python` and the `pip` package installer to install and run 
 ```bash
 $ module load cray-python
 ```
-You can check with `python3 --version` that your python version is `3.8` or greater
+You can check with `python3 --version` that your python version is `3.8` or greater. **[JQ - `python` also works]** You will have to load this module every time you login.
 
 (at the time of writing, the default version was `3.9.13`).
 
@@ -56,6 +56,10 @@ On ARCHER2, the compute nodes do not have access to your home directory, therefo
 ```bash
 $ cd /work/ta122/ta122/${USER}
 ```
+
+:::warning
+If you are tempted to use a symlink here, ensure you use `cd -P` when changing directory. Archer2 compute nodes cannot read from `/home`, only `/work`, so not completely following symlinks can result in a broken installation.
+:::
 
 ----
 
@@ -75,10 +79,13 @@ Before proceeding to install the software, we recommend creating a python virtua
 $ python3 -m venv excalibur-env
 $ source excalibur-env/bin/activate
 ```
+
 You should now see the name of the environment in parenthesis your terminal prompt, for example:
 ```bash
 (excalibur-env) tk-d193@ln03:/work/d193/d193/tk-d193>
 ```
+
+You will have to activate the environment each time you login. To deactivate the environment run `deactivate`.
 
 ----
 
@@ -130,7 +137,7 @@ You can check everything has been installed successfully by checking that `spack
 
 ```bash
 $ spack --version
-reframe --version0.19.0.dev0 (a8b1314d188149e696eb8e7ba3e4d0de548f1894)
+0.19.0.dev0 (a8b1314d188149e696eb8e7ba3e4d0de548f1894)
 $ reframe --version
 4.3.0
 $ ls $RFM_CONFIG_FILES
@@ -138,6 +145,20 @@ $ ls $RFM_CONFIG_FILES
 ```
 
 ---
+
+## Environment summary
+
+If you log out and back in, you will have to run some of the above commands again to recreate your environment. These are (from your `work` directory):
+
+```
+module load cray-python
+source excalibur-env/bin/activate
+export RFM_CONFIG_FILES="$(pwd)/excalibur-tests/benchmarks/reframe_config.py"
+export RFM_USE_LOGIN_SHELL="true"
+source ./spack/share/spack/setup-env.sh
+```
+
+----
 
 # Run Sombrero Example
 
@@ -148,7 +169,7 @@ reframe -c <path/to/benchmark> -r
 
 ----
 
-## Archer2 specific commands
+## ARCHER2 specific commands
 
 In addition, on ARCHER2, you have to provide the quality of service (QoS) type for your job to ReFrame on the command line with `-J`. Use the "short" QoS to run the sombrero example with
 ```bash
@@ -197,14 +218,89 @@ Log file(s) saved in '/tmp/rfm-u1l6yt7f.log'
 
 ```
 
+**[JQ - My performance values weren't good enough!!]**:
+
+::: spoiler
+
+```
+[ReFrame Setup]
+  version:           4.3.2
+  command:           '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/excalibur-env/bin/reframe -c excalibur-tests/benchmarks/examples/sombrero -r -J--qos=short'
+  launched by:       jquinn-d193@ln01
+  working directory: '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193'
+  settings files:    '<builtin>', '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/excalibur-tests/benchmarks/reframe_config.py'
+  check search path: '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/excalibur-tests/benchmarks/examples/sombrero'
+  stage directory:   '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/stage'
+  output directory:  '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/output'
+  log files:         '/tmp/rfm-ahyth99x.log'
+
+[==========] Running 4 check(s)
+[==========] Started on Thu Aug 17 16:50:32 2023 
+
+[----------] start processing checks
+[ RUN      ] SombreroBenchmark %tasks=2 %cpus_per_task=2 /de04c10b @archer2:compute-node+default
+[ RUN      ] SombreroBenchmark %tasks=2 %cpus_per_task=1 /c52a123d @archer2:compute-node+default
+[ RUN      ] SombreroBenchmark %tasks=1 %cpus_per_task=2 /c1c3a3f1 @archer2:compute-node+default
+[ RUN      ] SombreroBenchmark %tasks=1 %cpus_per_task=1 /52e1ce98 @archer2:compute-node+default
+[     FAIL ] (1/4) SombreroBenchmark %tasks=1 %cpus_per_task=2 /c1c3a3f1 @archer2:compute-node+default
+P: flops: 0.65 Gflops/seconds (r:1.2, l:-0.2, u:None)
+==> test failed during 'performance': test staged in '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/stage/archer2/compute-node/default/SombreroBenchmark_c1c3a3f1'
+[     FAIL ] (2/4) SombreroBenchmark %tasks=1 %cpus_per_task=1 /52e1ce98 @archer2:compute-node+default
+P: flops: 0.66 Gflops/seconds (r:1.2, l:-0.2, u:None)
+==> test failed during 'performance': test staged in '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/stage/archer2/compute-node/default/SombreroBenchmark_52e1ce98'
+[       OK ] (3/4) SombreroBenchmark %tasks=2 %cpus_per_task=2 /de04c10b @archer2:compute-node+default
+P: flops: 1.28 Gflops/seconds (r:1.2, l:-0.2, u:None)
+[       OK ] (4/4) SombreroBenchmark %tasks=2 %cpus_per_task=1 /c52a123d @archer2:compute-node+default
+P: flops: 1.26 Gflops/seconds (r:1.2, l:-0.2, u:None)
+[----------] all spawned checks have finished
+
+[  FAILED  ] Ran 4/4 test case(s) from 4 check(s) (2 failure(s), 0 skipped, 0 aborted)
+[==========] Finished on Thu Aug 17 16:52:34 2023 
+=============================================================================================
+SUMMARY OF FAILURES
+---------------------------------------------------------------------------------------------
+FAILURE INFO for SombreroBenchmark %tasks=1 %cpus_per_task=2 (run: 1/1)
+  * Description: 
+  * System partition: archer2:compute-node
+  * Environment: default
+  * Stage directory: /mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/stage/archer2/compute-node/default/SombreroBenchmark_c1c3a3f1
+  * Node list: nid001004
+  * Job type: batch job (id=4267769)
+  * Dependencies (conceptual): []
+  * Dependencies (actual): []
+  * Maintainers: []
+  * Failing phase: performance
+  * Rerun with '-n /c1c3a3f1 -p default --system archer2:compute-node -r'
+  * Reason: performance error: failed to meet reference: flops=0.65, expected 1.2 (l=0.96, u=inf)
+---------------------------------------------------------------------------------------------
+FAILURE INFO for SombreroBenchmark %tasks=1 %cpus_per_task=1 (run: 1/1)
+  * Description: 
+  * System partition: archer2:compute-node
+  * Environment: default
+  * Stage directory: /mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/stage/archer2/compute-node/default/SombreroBenchmark_52e1ce98
+  * Node list: nid004885
+  * Job type: batch job (id=4267770)
+  * Dependencies (conceptual): []
+  * Dependencies (actual): []
+  * Maintainers: []
+  * Failing phase: performance
+  * Rerun with '-n /52e1ce98 -p default --system archer2:compute-node -r'
+  * Reason: performance error: failed to meet reference: flops=0.66, expected 1.2 (l=0.96, u=inf)
+---------------------------------------------------------------------------------------------
+Log file(s) saved in '/tmp/rfm-ahyth99x.log'
+```
+
+:::
+
 ----
 
-TODO: Things to note in output
-- Config file
-- Stage directory for intermediate files (useful when benchmarks fail)
-- Output directory for output files
-- Figures of merit
-You can find the log files from this benchmark in `perflogs/`
+## Benchmark output
+
+You can find build and run logs in the `output/` directory of a successful benchmark. They record how the benchmark was built by spack and ran by ReFrame.
+
+While the benchmark is running, the log files are kept in the `stage/` directory. They remain there if the benchmark fails to build or run.
+
+You can find the performance log file from the benchmark in `perflogs/`. The perflog records the captured figures of merit, environment variables and metadata about the job.
 
 ---
 
@@ -214,22 +310,34 @@ You can find the log files from this benchmark in `perflogs/`
 
 # Create a Benchmark
 
-In this section you will create a ReFrame benchmark by writing a python class that tells ReFrame how to build and run an application and collect data from its output. For simplicity, we use the [`STREAM`](https://www.cs.virginia.edu/stream/ref.html) benchmark. It is a simple memory bandwidth benchmark with minimal build dependencies.
+In this section you will create a ReFrame benchmark by writing a python class that tells ReFrame how to build and run an application and collect data from its output. 
+
+For simplicity, we use the [`STREAM`](https://www.cs.virginia.edu/stream/ref.html) benchmark. It is a simple memory bandwidth benchmark with minimal build dependencies.
+
+----
+
+## Getting started
+
+To get started, open an empty `.py` file where you will write the ReFrame class, e.g. `stream.py`. Save the file in a new directory e.g. `excalibur-tests/benchmarks/apps/stream`.
 
 ----
 
 ## Include ReFrame modules
+
+The first thing you need is include a few modules from ReFrame. These should be available if the installation step was successful.
 
 ```python
 import reframe as rfm
 import reframe.utility.sanity as sn
 ```
 
+**[JQ - I presume this code is meant to go in a .py file? Any restrictions on the name?]**
+
 ----
 
 ## Create a Test Class
 
-`SpackTest` is a class for benchmarks which will use Spack as build system. 
+`SpackTest` is a base class for benchmarks that use Spack as build system. It contains a lot of the boilerplate code you'd otherwise have to include in this class.
 
 ```python
 from benchmarks.modules.utils import SpackTest
@@ -237,6 +345,10 @@ from benchmarks.modules.utils import SpackTest
 @rfm.simple_test
 class StreamBenchmark(SpackTest):
 ```
+
+The data members and methods detailed in the following sections should be placed inside this class.
+
+**[JQ - should spacktest always be used for custom benchmarks?]**
 
 ----
 
@@ -261,7 +373,7 @@ The ReFrame class tells ReFrame where and how to run the benchmark. We want to r
 ```python
 valid_systems = ['archer2']
 valid_prog_environs = ['default']
-executable = stream_c.exe
+executable = 'stream_c.exe'
 num_tasks = 1
 num_cpus_per_task = 128
 time_limit = '5m'
@@ -296,7 +408,7 @@ def validate_solution(self):
 
 ## Add Performance Pattern Check
 
-To record the performance of the benchmark, ReFrame should extract a figure of merit from the output of the test. A function decorated with the `@performance_function` decorator extracts or computes a performance metric    from the test’s output.
+To record the performance of the benchmark, ReFrame should extract a figure of merit from the output of the test. A function decorated with the `@performance_function` decorator extracts or computes a performance metric from the test’s output.
 
 > In this example, we extract four performance variables, namely the memory bandwidth values for each of the “Copy”, “Scale”, “Add” and “Triad” sub-benchmarks of STREAM, where each of the performance functions use the [`extractsingle()`](https://reframe-hpc.readthedocs.io/en/latest/deferrable_functions_reference.html#reframe.utility.sanity.extractsingle) utility function. For each of the sub-benchmarks we extract the “Best Rate MB/s” column of the output (see below) and we convert that to a float.
 
@@ -322,11 +434,11 @@ def extract_triad_perf(self):
     return sn.extractsingle(r'Triad:\s+(\S+)\s+.*', self.stdout, 1, float)
 ```
 
----
+----
 
 ## Run Stream Benchmark
 
-Save the reframe class in a new directory e.g. `excalibur-tests/benchmarks/apps/stream`. You can now run the benchmark in the same way as the previous sombrero example
+You can now run the benchmark in the same way as the previous sombrero example
 
 ```bash
 reframe -c excalibur-tests/benchmarks/apps/stream/ -r --system archer2 -J'--qos=short'
@@ -334,7 +446,7 @@ reframe -c excalibur-tests/benchmarks/apps/stream/ -r --system archer2 -J'--qos=
 
 ----
 
-# Sample Output
+## Sample Output
 ```bash=
 reframe -c apps/stream/ -r --system archer2 -J'--qos=short'
 [ReFrame Setup]
@@ -368,19 +480,99 @@ Log file(s) saved in '/tmp/rfm-70arere5.log'
 
 ----
 
+## Interpreting STREAM results
+
+With default compile options, STREAM uses arrays of 10 million elements. On a full ARCHER2 node, the default array size fits into cache, and the benchmark does not report the correct memory bandwidth. Therefore the numbers from this tutorial are not comparable with other, published, results.
+
+To avoid caching, increase the array size during build by adding e.g. `stream_array_size=64000000` to the spack spec. 
+
+----
+
 ## Parametrized tests
 
-TODO 
-For example
+You can pass a list to the `parameter()` built-in function in the class body to create a parametrized test. You cannot access the individual parameter value within the class body, so any reference to them should be placed in the appropriate function, for example `__init__()`
+
+Example: Parametrize the array size
 
 ```python
-threads = parameter([1, 8, 16, 64, 128])
-def __init__(self):                    
-    self.num_cpus_per_task = self.threads
-def setup_variables(self):
-    self.env_vars['OMP_NUM_THREADS'] =  f'{self.num_cpus_per_task}'
-    self.env_vars['OMP_PLACES'] =  'cores'
+array_size = parameter(int(i) for i in [4e6,8e6,16e6,32e6,64e6])
+def __init__(self):
+    self.spack_spec = f"stream@5.10 +openmp stream_array_size={self.array_size}"
 ```
+
+:::spoiler Array size parametrization output
+```bash=
+[----------] start processing checks
+[ RUN      ] StreamBenchmark %array_size=64000000 /bbfd0e71 @archer2:compute-node+default
+[ RUN      ] StreamBenchmark %array_size=32000000 /e16f9017 @archer2:compute-node+default
+[ RUN      ] StreamBenchmark %array_size=16000000 /abc01230 @archer2:compute-node+default
+[ RUN      ] StreamBenchmark %array_size=8000000 /51d83d77 @archer2:compute-node+default
+[ RUN      ] StreamBenchmark %array_size=4000000 /8399bc0b @archer2:compute-node+default
+[       OK ] (1/5) StreamBenchmark %array_size=16000000 /abc01230 @archer2:compute-node+default
+P: Copy: 235935.4 MB/s (r:0, l:None, u:None)
+P: Scale: 229579.2 MB/s (r:0, l:None, u:None)
+P: Add: 164113.8 MB/s (r:0, l:None, u:None)
+P: Triad: 160868.2 MB/s (r:0, l:None, u:None)
+[       OK ] (2/5) StreamBenchmark %array_size=8000000 /51d83d77 @archer2:compute-node+default
+P: Copy: 722571.9 MB/s (r:0, l:None, u:None)
+P: Scale: 795364.3 MB/s (r:0, l:None, u:None)
+P: Add: 845910.1 MB/s (r:0, l:None, u:None)
+P: Triad: 857621.3 MB/s (r:0, l:None, u:None)
+[       OK ] (3/5) StreamBenchmark %array_size=32000000 /e16f9017 @archer2:compute-node+default
+P: Copy: 125276.1 MB/s (r:0, l:None, u:None)
+P: Scale: 113126.7 MB/s (r:0, l:None, u:None)
+P: Add: 100628.7 MB/s (r:0, l:None, u:None)
+P: Triad: 104038.0 MB/s (r:0, l:None, u:None)
+[       OK ] (4/5) StreamBenchmark %array_size=64000000 /bbfd0e71 @archer2:compute-node+default
+P: Copy: 130526.3 MB/s (r:0, l:None, u:None)
+P: Scale: 106487.7 MB/s (r:0, l:None, u:None)
+P: Add: 104170.9 MB/s (r:0, l:None, u:None)
+P: Triad: 106335.6 MB/s (r:0, l:None, u:None)
+[       OK ] (5/5) StreamBenchmark %array_size=4000000 /8399bc0b @archer2:compute-node+default
+P: Copy: 735439.6 MB/s (r:0, l:None, u:None)
+P: Scale: 791845.0 MB/s (r:0, l:None, u:None)
+P: Add: 951898.8 MB/s (r:0, l:None, u:None)
+P: Triad: 949653.7 MB/s (r:0, l:None, u:None)
+[----------] all spawned checks have finished
+
+[  PASSED  ] Ran 5/5 test case(s) from 5 check(s) (0 failure(s), 0 skipped, 0 aborted)
+[==========] Finished on Wed Aug 23 13:25:12 2023 
+
+```
+:::
+
+----
+
+## Reference values
+
+ReFrame can automate checking that the results fall within an expected range. We can use it in our previous example of increasing the array size to avoid caching. You can set a different reference value for each `perf_key` in the performance function. For example, set the test to fail if it falls outside of +-25% of the values obtained with the largest array size.
+
+```python
+reference = {
+    'archer2': {
+        'Copy':  (130000, -0.25, 0.25, 'MB/s'),
+        'Scale': (105000, -0.25, 0.25, 'MB/s'),
+        'Add':   (105000, -0.25, 0.25, 'MB/s'),
+        'Triad': (105000, -0.25, 0.25, 'MB/s')
+    }
+}
+```
+
+> The performance reference tuple consists of the reference value, the lower and upper thresholds expressed as fractional numbers relative to the reference value, and the unit of measurement. If any of the thresholds is not relevant, None may be used instead. Also, the units in this reference variable are entirely optional, since they were already provided through the @performance_function decorator.
+
+----
+
+## (extra) Tuning the performance
+
+ReFrame allows you to [modify the parallel launcher command](https://reframe-hpc.readthedocs.io/en/stable/tutorial_advanced.html#modifying-the-parallel-launcher-command). Doing it too generally may break portability of benchmarks, and is not advised. However, we can target the `archer2` system specifically to get better performance on ARCHER2 by using
+
+```python
+@run_before('run')
+def set_cpu_binding(self):
+    if self.current_system.name == 'archer2':
+        self.job.launcher.options = ['--distribution=block:block --hint=nomultithread']
+```
+Modify the reference values to match the improved performance.
 
 ---
 
@@ -474,7 +666,27 @@ fi
 
 # Useful Reading
 
+----
+
+## ReFrame
+
+- [ReFrame Documentation](https://reframe-hpc.readthedocs.io/)
 - ReFrame tutorials
+    - [Tutorial 1: Getting started with ReFrame](https://reframe-hpc.readthedocs.io/en/stable/tutorial_basics.html)
+    - [Tutorial 2: Customizing Further a Regression Test](https://reframe-hpc.readthedocs.io/en/stable/tutorial_advanced.html)
+    - [Tutorial 3: Using Dependencies in ReFrame Tests](https://reframe-hpc.readthedocs.io/en/stable/tutorial_deps.html)
+    - [Tutorial 4: Using Test Fixtures](https://reframe-hpc.readthedocs.io/en/stable/tutorial_fixtures.html)
+    - [Tutorial 5: Using Build Automation Tools As a Build System](https://reframe-hpc.readthedocs.io/en/stable/tutorial_build_automation.html)
+    - [Tutorial 6: Tips and Tricks](https://reframe-hpc.readthedocs.io/en/stable/tutorial_tips_tricks.html)
 - Libraries of ReFrame tests
-- Other ReFrame functionality: build systems, dependencies
-- Links to Spack
+    - [Official ReFrame test library](https://reframe-hpc.readthedocs.io/en/stable/hpctestlib.html)
+    - [ReFrame GitHub organisation with various contributed test libraries](https://github.com/reframe-hpc)
+
+----
+
+## Spack
+
+- [Spack documentation](https://spack.readthedocs.io/)
+- [Spack tutorial (including YouTube recordings)](https://spack-tutorial.readthedocs.io/)
+- [Spack package searchable list](https://packages.spack.io/)
+
