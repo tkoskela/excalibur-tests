@@ -218,8 +218,6 @@ Log file(s) saved in '/tmp/rfm-u1l6yt7f.log'
 
 ```
 
-**[JQ - My performance values weren't good enough!!]**:
-
 ::: spoiler
 
 ```
@@ -305,6 +303,100 @@ You can find the performance log file from the benchmark in `perflogs/`. The per
 ---
 
 # Postprocess Benchmark Results
+
+Now let's look at the Benchmark performance results, and create a plot to visualise them.
+
+----
+
+## The perflog
+
+Your perflog after running the Sombrero benchmark probably looks something like
+```
+job_completion_time|version|info|jobid|num_tasks|num_cpus_per_task|num_tasks_per_node|num_gpus_per_node|flops_value|flops_unit|flops_ref|flops_lower_thres|flops_upper_thres|spack_spec|display_name|system|partition|environ|extra_resources|env_vars|tags
+2023-08-25T11:23:46|reframe 4.3.2|SombreroBenchmark %tasks=2 %cpus_per_task=2 /de04c10b @archer2:compute-node+default|4323431|2|2|1|null|1.31|Gflops/seconds|1.2|-0.2|None|sombrero@2021-08-16|SombreroBenchmark %tasks=2 %cpus_per_task=2|archer2|compute-node|default|{}|{"OMP_NUM_THREADS": "2"}|example
+2023-08-25T11:23:48|reframe 4.3.2|SombreroBenchmark %tasks=1 %cpus_per_task=2 /c1c3a3f1 @archer2:compute-node+default|4323433|1|2|1|null|0.67|Gflops/seconds|1.2|-0.2|None|sombrero@2021-08-16|SombreroBenchmark %tasks=1 %cpus_per_task=2|archer2|compute-node|default|{}|{"OMP_NUM_THREADS": "2"}|example
+2023-08-25T11:23:48|reframe 4.3.2|SombreroBenchmark %tasks=1 %cpus_per_task=1 /52e1ce98 @archer2:compute-node+default|4323434|1|1|1|null|0.67|Gflops/seconds|1.2|-0.2|None|sombrero@2021-08-16|SombreroBenchmark %tasks=1 %cpus_per_task=1|archer2|compute-node|default|{}|{"OMP_NUM_THREADS": "1"}|example
+2023-08-25T11:23:48|reframe 4.3.2|SombreroBenchmark %tasks=2 %cpus_per_task=1 /c52a123d @archer2:compute-node+default|4323432|2|1|1|null|1.29|Gflops/seconds|1.2|-0.2|None|sombrero@2021-08-16|SombreroBenchmark %tasks=2 %cpus_per_task=1|archer2|compute-node|default|{}|{"OMP_NUM_THREADS": "1"}|example
+```
+Every time the same benchmark is run, a line is appended in this perflog (several for parametrised runs).
+A lot of information is there, but most notably
+- Some general info about the benchmark run, including system, spack, and environment info.
+- The Figure(s) Of Merit (FOM) value, units, reference value, and lower and upper limits (`flops` in this case)
+- The `display_name` field, which encodes the benchmark name and parameters (`SombreroBenchmark %tasks=... %cpus_per_task=...` in this case)
+- Other quantities the user might want to compare performance for, passed as environment variables and encoded in the `env_vars` field.
+- The benchmark `tag` - another way to encode benchmark inputs, defined by the benchmark developers.
+
+----
+
+## The plotting configuration file
+
+
+The user might want to plot the FOMs of their benchmarks against any of those other parameters. This generic plotting is driven by a configuration YAML file. Let's make one, and save it in `excalibur-tests/post-processing/post_processing_config.yaml`.
+
+We need to include
+- The plot title and axis information
+
+Axes must have a value specified with a perflog column name or a benchmark parameter name, and units specified with either a perflog column name or a custom label (including `null`).
+```
+title: Performance vs number of tasks and CPUs_per_task
+
+x_axis:
+  value: "tasks"
+  units:
+    custom: null
+
+y_axis:
+  value: "flops_value"
+  units:
+    column: "flops_unit"
+```
+
+----
+
+- Optionally, filter data rows based on specified conditions. (Specify an empty list if no filters are required.)
+
+Format: `[column_name, operator, value]`, 
+Accepted operators: "==", "!=", "<", ">", "<=", ">="
+```
+filters: [["tags", "==", "example"]]
+```
+
+**NOTE:** I need to use the above filter because my perflog file is a bit dirty, after re-running the benchmarks a few times. Feel free to experiment with a dirtier perflog file (eg. the one in `excalibur-tests/post-processing` or a folder with several perflog files.
+
+
+----
+
+- Optionally, display several plots in the same graph and group x-axis data by specified column values. (Specify an empty list if there is only one series.)
+
+Format: `[column_name, value]`
+```
+series: [["cpus_per_task", "1"], ["cpus_per_task", "2"]]
+```
+**NOTE:** Currently, only one distinct `column_name` is supported. In the future, a second one will be allowed to be added. But in any case, unlimited number of series can be plotted for the same `column_name` but different `value`.
+
+----
+
+## Run the postprocessing
+
+We can now run the postprocessing with
+```
+python post_processing.py <log_path> <config_path>
+```
+where
+- `<log_path>` is the path to a perflog file or a directory containing perflog files.
+- `<config_path>` is the path to the configuration YAML file.
+
+In our case,
+```
+python excalibur-tests/post-processing/post_processing.py perflogs excalibur-tests/post-processing/post_processing_config.yaml
+```
+
+----
+
+`scp` over the `Performance_vs_number_of_tasks_and_CPUs_per_task.html` file created in `excalibur-tests/post-processing`, and behold!
+
+**[IC: how do I copy an image over?]**
+
 
 ---
 
@@ -573,6 +665,8 @@ def set_cpu_binding(self):
         self.job.launcher.options = ['--distribution=block:block --hint=nomultithread']
 ```
 Modify the reference values to match the improved performance.
+
+Note: launcher options don't get recored in ReFrame logs
 
 ---
 
