@@ -4,7 +4,7 @@
 
 <style>
 .reveal {
-  font-size: 32px;
+  font-size: 30px;
 }
 </style>
 
@@ -18,7 +18,7 @@ In this tutorial you will set up the benchmarking framework on the [ARCHER2](htt
 
 To complete this tutorial, you need to [connect to ARCHER2 via ssh](https://docs.archer2.ac.uk/user-guide/connecting/). You will need
 
-1. An ARCHER2 account. You can [request a new account](https://docs.archer2.ac.uk/quick-start/quickstart-users/#request-an-account-on-archer2) if you haven't got one you can use. Use the project code `ta122` to request your account.
+1. An ARCHER2 account. You can [request a new account](https://docs.archer2.ac.uk/quick-start/quickstart-users/#request-an-account-on-archer2) if you haven't got one you can use. Use the project code `ta122` to request your account. You can use an existing ARCHER2 account to complete this workshop.
 2. A command line terminal with an ssh client. Most Linux and Mac systems come with these preinstalled. Please see [Connecting to ARCHER2](https://docs.archer2.ac.uk/user-guide/connecting/#command-line-terminal) for more information and Windows instructions.
 
 ----
@@ -215,80 +215,7 @@ P: flops: 1.24 Gflops/seconds (r:1.2, l:None, u:None)
 [  PASSED  ] Ran 4/4 test case(s) from 4 check(s) (0 failure(s), 0 skipped, 0 aborted)
 [==========] Finished on Fri Jul  7 15:48:23 2023 
 Log file(s) saved in '/tmp/rfm-u1l6yt7f.log'
-
 ```
-
-::: spoiler
-
-```
-[ReFrame Setup]
-  version:           4.3.2
-  command:           '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/excalibur-env/bin/reframe -c excalibur-tests/benchmarks/examples/sombrero -r -J--qos=short'
-  launched by:       jquinn-d193@ln01
-  working directory: '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193'
-  settings files:    '<builtin>', '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/excalibur-tests/benchmarks/reframe_config.py'
-  check search path: '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/excalibur-tests/benchmarks/examples/sombrero'
-  stage directory:   '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/stage'
-  output directory:  '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/output'
-  log files:         '/tmp/rfm-ahyth99x.log'
-
-[==========] Running 4 check(s)
-[==========] Started on Thu Aug 17 16:50:32 2023 
-
-[----------] start processing checks
-[ RUN      ] SombreroBenchmark %tasks=2 %cpus_per_task=2 /de04c10b @archer2:compute-node+default
-[ RUN      ] SombreroBenchmark %tasks=2 %cpus_per_task=1 /c52a123d @archer2:compute-node+default
-[ RUN      ] SombreroBenchmark %tasks=1 %cpus_per_task=2 /c1c3a3f1 @archer2:compute-node+default
-[ RUN      ] SombreroBenchmark %tasks=1 %cpus_per_task=1 /52e1ce98 @archer2:compute-node+default
-[     FAIL ] (1/4) SombreroBenchmark %tasks=1 %cpus_per_task=2 /c1c3a3f1 @archer2:compute-node+default
-P: flops: 0.65 Gflops/seconds (r:1.2, l:-0.2, u:None)
-==> test failed during 'performance': test staged in '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/stage/archer2/compute-node/default/SombreroBenchmark_c1c3a3f1'
-[     FAIL ] (2/4) SombreroBenchmark %tasks=1 %cpus_per_task=1 /52e1ce98 @archer2:compute-node+default
-P: flops: 0.66 Gflops/seconds (r:1.2, l:-0.2, u:None)
-==> test failed during 'performance': test staged in '/mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/stage/archer2/compute-node/default/SombreroBenchmark_52e1ce98'
-[       OK ] (3/4) SombreroBenchmark %tasks=2 %cpus_per_task=2 /de04c10b @archer2:compute-node+default
-P: flops: 1.28 Gflops/seconds (r:1.2, l:-0.2, u:None)
-[       OK ] (4/4) SombreroBenchmark %tasks=2 %cpus_per_task=1 /c52a123d @archer2:compute-node+default
-P: flops: 1.26 Gflops/seconds (r:1.2, l:-0.2, u:None)
-[----------] all spawned checks have finished
-
-[  FAILED  ] Ran 4/4 test case(s) from 4 check(s) (2 failure(s), 0 skipped, 0 aborted)
-[==========] Finished on Thu Aug 17 16:52:34 2023 
-=============================================================================================
-SUMMARY OF FAILURES
----------------------------------------------------------------------------------------------
-FAILURE INFO for SombreroBenchmark %tasks=1 %cpus_per_task=2 (run: 1/1)
-  * Description: 
-  * System partition: archer2:compute-node
-  * Environment: default
-  * Stage directory: /mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/stage/archer2/compute-node/default/SombreroBenchmark_c1c3a3f1
-  * Node list: nid001004
-  * Job type: batch job (id=4267769)
-  * Dependencies (conceptual): []
-  * Dependencies (actual): []
-  * Maintainers: []
-  * Failing phase: performance
-  * Rerun with '-n /c1c3a3f1 -p default --system archer2:compute-node -r'
-  * Reason: performance error: failed to meet reference: flops=0.65, expected 1.2 (l=0.96, u=inf)
----------------------------------------------------------------------------------------------
-FAILURE INFO for SombreroBenchmark %tasks=1 %cpus_per_task=1 (run: 1/1)
-  * Description: 
-  * System partition: archer2:compute-node
-  * Environment: default
-  * Stage directory: /mnt/lustre/a2fs-work3/work/d193/d193/jquinn-d193/stage/archer2/compute-node/default/SombreroBenchmark_52e1ce98
-  * Node list: nid004885
-  * Job type: batch job (id=4267770)
-  * Dependencies (conceptual): []
-  * Dependencies (actual): []
-  * Maintainers: []
-  * Failing phase: performance
-  * Rerun with '-n /52e1ce98 -p default --system archer2:compute-node -r'
-  * Reason: performance error: failed to meet reference: flops=0.66, expected 1.2 (l=0.96, u=inf)
----------------------------------------------------------------------------------------------
-Log file(s) saved in '/tmp/rfm-ahyth99x.log'
-```
-
-:::
 
 ----
 
@@ -310,7 +237,7 @@ Now let's look at the Benchmark performance results, and create a plot to visual
 
 ## The perflog
 
-Your perflog after running the Sombrero benchmark probably looks something like
+After running the Sombrero benchmark once you should have a perflog in `perflogs/archer2/compute-node/SombreroBenchmark.log` that looks like this
 ```
 job_completion_time|version|info|jobid|num_tasks|num_cpus_per_task|num_tasks_per_node|num_gpus_per_node|flops_value|flops_unit|flops_ref|flops_lower_thres|flops_upper_thres|spack_spec|display_name|system|partition|environ|extra_resources|env_vars|tags
 2023-08-25T11:23:46|reframe 4.3.2|SombreroBenchmark %tasks=2 %cpus_per_task=2 /de04c10b @archer2:compute-node+default|4323431|2|2|1|null|1.31|Gflops/seconds|1.2|-0.2|None|sombrero@2021-08-16|SombreroBenchmark %tasks=2 %cpus_per_task=2|archer2|compute-node|default|{}|{"OMP_NUM_THREADS": "2"}|example
@@ -318,8 +245,7 @@ job_completion_time|version|info|jobid|num_tasks|num_cpus_per_task|num_tasks_per
 2023-08-25T11:23:48|reframe 4.3.2|SombreroBenchmark %tasks=1 %cpus_per_task=1 /52e1ce98 @archer2:compute-node+default|4323434|1|1|1|null|0.67|Gflops/seconds|1.2|-0.2|None|sombrero@2021-08-16|SombreroBenchmark %tasks=1 %cpus_per_task=1|archer2|compute-node|default|{}|{"OMP_NUM_THREADS": "1"}|example
 2023-08-25T11:23:48|reframe 4.3.2|SombreroBenchmark %tasks=2 %cpus_per_task=1 /c52a123d @archer2:compute-node+default|4323432|2|1|1|null|1.29|Gflops/seconds|1.2|-0.2|None|sombrero@2021-08-16|SombreroBenchmark %tasks=2 %cpus_per_task=1|archer2|compute-node|default|{}|{"OMP_NUM_THREADS": "1"}|example
 ```
-Every time the same benchmark is run, a line is appended in this perflog (several for parametrised runs).
-A lot of information is there, but most notably
+Every time the same benchmark is run, a line is appended in this perflog. The perflog contains
 - Some general info about the benchmark run, including system, spack, and environment info.
 - The Figure(s) Of Merit (FOM) value, units, reference value, and lower and upper limits (`flops` in this case)
 - The `display_name` field, which encodes the benchmark name and parameters (`SombreroBenchmark %tasks=... %cpus_per_task=...` in this case)
@@ -331,13 +257,20 @@ A lot of information is there, but most notably
 ## The plotting configuration file
 
 
-The user might want to plot the FOMs of their benchmarks against any of those other parameters. This generic plotting is driven by a configuration YAML file. Let's make one, and save it in `excalibur-tests/post-processing/post_processing_config.yaml`.
+There are tools to plot the FOMs of benchmarks against any of the other parameters in the perflog. This generic plotting is driven by a configuration YAML file. Let's make one, and save it in `excalibur-tests/post-processing/post_processing_config.yaml`.
 
-We need to include
-- The plot title and axis information
+The file needs to include
+- Plot title 
+- Axis information
+- Data series
+- Filters
+
+----
+
+## Title and Axes
 
 Axes must have a value specified with a perflog column name or a benchmark parameter name, and units specified with either a perflog column name or a custom label (including `null`).
-```
+```yaml
 title: Performance vs number of tasks and CPUs_per_task
 
 x_axis:
@@ -353,33 +286,37 @@ y_axis:
 
 ----
 
-- Optionally, filter data rows based on specified conditions. (Specify an empty list if no filters are required.)
+## Data series
 
-Format: `[column_name, operator, value]`, 
-Accepted operators: "==", "!=", "<", ">", "<=", ">="
-```
-filters: [["tags", "==", "example"]]
-```
-
-**NOTE:** I need to use the above filter because my perflog file is a bit dirty, after re-running the benchmarks a few times. Feel free to experiment with a dirtier perflog file (eg. the one in `excalibur-tests/post-processing` or a folder with several perflog files.
-
-
-----
-
-- Optionally, display several plots in the same graph and group x-axis data by specified column values. (Specify an empty list if there is only one series.)
+Display several plots in the same graph and group x-axis data by specified column values. Specify an empty list if the perflog only has one series. In our sombrero example, we have two parameters, Therefore we need to either filter down to one, or make them separate series. Let's use separate series:
 
 Format: `[column_name, value]`
-```
+```yaml
 series: [["cpus_per_task", "1"], ["cpus_per_task", "2"]]
 ```
 **NOTE:** Currently, only one distinct `column_name` is supported. In the future, a second one will be allowed to be added. But in any case, unlimited number of series can be plotted for the same `column_name` but different `value`.
 
 ----
 
+
+## Filtering
+
+You can filter data rows based on specified conditions. Specify an empty list for no filters.
+
+Format: `[column_name, operator, value]`, 
+Accepted operators: "==", "!=", "<", ">", "<=", ">="
+```yaml
+filters: []
+```
+
+**NOTE:** I need to use the above filter because my perflog file is a bit dirty, after re-running the benchmarks a few times. Feel free to experiment with a dirtier perflog file (eg. the one in `excalibur-tests/post-processing` or a folder with several perflog files.
+
+----
+
 ## Run the postprocessing
 
 We can now run the postprocessing with
-```
+```bash
 python post_processing.py <log_path> <config_path>
 ```
 where
@@ -387,15 +324,20 @@ where
 - `<config_path>` is the path to the configuration YAML file.
 
 In our case,
-```
+```bash
 python excalibur-tests/post-processing/post_processing.py perflogs excalibur-tests/post-processing/post_processing_config.yaml
 ```
 
 ----
 
+## View the Output
+
 `scp` over the `Performance_vs_number_of_tasks_and_CPUs_per_task.html` file created in `excalibur-tests/post-processing`, and behold!
 
-**[IC: how do I copy an image over?]**
+:::spoiler Image
+![](https://hackmd.io/_uploads/rkgyyJaa3.png)
+:::
+
 
 
 ---
@@ -405,6 +347,16 @@ python excalibur-tests/post-processing/post_processing.py perflogs excalibur-tes
 In this section you will create a ReFrame benchmark by writing a python class that tells ReFrame how to build and run an application and collect data from its output. 
 
 For simplicity, we use the [`STREAM`](https://www.cs.virginia.edu/stream/ref.html) benchmark. It is a simple memory bandwidth benchmark with minimal build dependencies.
+
+----
+
+## How ReFrame works
+
+When ReFrame executes a test it runs a pipeline of the following stages
+
+![](https://reframe-hpc.readthedocs.io/en/stable/_images/pipeline.svg)
+
+You can customise the behaviour of each stage or add a hook before or after each of them.  For more details, read the [ReFrame pipeline documentation](https://reframe-hpc.readthedocs.io/en/stable/pipeline.html).
 
 ----
 
@@ -423,13 +375,12 @@ import reframe as rfm
 import reframe.utility.sanity as sn
 ```
 
-**[JQ - I presume this code is meant to go in a .py file? Any restrictions on the name?]**
-
 ----
 
 ## Create a Test Class
 
-`SpackTest` is a base class for benchmarks that use Spack as build system. It contains a lot of the boilerplate code you'd otherwise have to include in this class.
+ReFrame has built-in support for the Spack package manager.
+In the following we will use the custom class `SpackTest` we created for our `benchmarks` module, which provides a tighter integration with Spack and reduces the boilerplate code you'd otherwise have to include.
 
 ```python
 from benchmarks.modules.utils import SpackTest
@@ -439,8 +390,6 @@ class StreamBenchmark(SpackTest):
 ```
 
 The data members and methods detailed in the following sections should be placed inside this class.
-
-**[JQ - should spacktest always be used for custom benchmarks?]**
 
 ----
 
@@ -478,10 +427,8 @@ time_limit = '5m'
 Environment variables can be added to the `env_vars` attribute.
 
 ```python
-env_vars = {
-        'OMP_NUM_THREADS': f'{num_cpus_per_task}',
-        'OMP_PLACES': 'cores'
-    }
+env_vars['OMP_NUM_THREADS'] = f'{num_cpus_per_task}'
+env_vars['OMP_PLACES'] = 'cores'
 ```
 
 ----
@@ -667,6 +614,29 @@ def set_cpu_binding(self):
 Modify the reference values to match the improved performance.
 
 Note: launcher options don't get recored in ReFrame logs
+
+----
+
+## Plotting STREAM benchmark output
+
+:::spoiler Postprocessing config
+```yaml
+title: Stream Triad Bandwidth
+
+x_axis:
+  value: "array_size"
+  units:
+    custom: null
+
+y_axis:
+  value: "Triad_value"
+  units: 
+    column: "Triad_unit"
+
+series: []
+filters: [["test_name","==","StreamBenchmark"]]
+```
+:::
 
 ---
 
