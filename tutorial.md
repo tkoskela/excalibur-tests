@@ -43,7 +43,7 @@ We are going to use `python` and the `pip` package installer to install and run 
 ```bash
 $ module load cray-python
 ```
-You can check with `python3 --version` that your python version is `3.8` or greater. **[JQ - `python` also works]** You will have to load this module every time you login.
+You can check with `python3 --version` that your python version is `3.8` or greater. You will have to load this module every time you login.
 
 (at the time of writing, the default version was `3.9.13`).
 
@@ -245,7 +245,11 @@ job_completion_time|version|info|jobid|num_tasks|num_cpus_per_task|num_tasks_per
 2023-08-25T11:23:48|reframe 4.3.2|SombreroBenchmark %tasks=1 %cpus_per_task=1 /52e1ce98 @archer2:compute-node+default|4323434|1|1|1|null|0.67|Gflops/seconds|1.2|-0.2|None|sombrero@2021-08-16|SombreroBenchmark %tasks=1 %cpus_per_task=1|archer2|compute-node|default|{}|{"OMP_NUM_THREADS": "1"}|example
 2023-08-25T11:23:48|reframe 4.3.2|SombreroBenchmark %tasks=2 %cpus_per_task=1 /c52a123d @archer2:compute-node+default|4323432|2|1|1|null|1.29|Gflops/seconds|1.2|-0.2|None|sombrero@2021-08-16|SombreroBenchmark %tasks=2 %cpus_per_task=1|archer2|compute-node|default|{}|{"OMP_NUM_THREADS": "1"}|example
 ```
-Every time the same benchmark is run, a line is appended in this perflog. The perflog contains
+Every time the same benchmark is run, a line is appended in this perflog.
+
+----
+
+The perflog contains
 - Some general info about the benchmark run, including system, spack, and environment info.
 - The Figure(s) Of Merit (FOM) value, units, reference value, and lower and upper limits (`flops` in this case)
 - The `display_name` field, which encodes the benchmark name and parameters (`SombreroBenchmark %tasks=... %cpus_per_task=...` in this case)
@@ -309,7 +313,7 @@ Accepted operators: "==", "!=", "<", ">", "<=", ">="
 filters: []
 ```
 
-**NOTE:** I need to use the above filter because my perflog file is a bit dirty, after re-running the benchmarks a few times. Feel free to experiment with a dirtier perflog file (eg. the one in `excalibur-tests/post-processing` or a folder with several perflog files.
+**NOTE:** After re-running the benchmarks a few times your perflog will get populated with multiple lines and you'll have to filter down to what you want to plot. Feel free to experiment with a dirtier perflog file (eg. the one in `excalibur-tests/post-processing` or a folder with several perflog files.
 
 ----
 
